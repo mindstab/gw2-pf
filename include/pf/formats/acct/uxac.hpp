@@ -28,7 +28,7 @@ SOFTWARE.
 #include <variant>
 
 #ifndef ACCT_UXAC_MIN_VERSION
-#define ACCT_UXAC_MIN_VERSION 18
+#define ACCT_UXAC_MIN_VERSION 20
 #endif
 
 #include "pf/chunk.hpp"
@@ -45,7 +45,9 @@ SOFTWARE.
 #include "uxac/uxac_v16.hpp"
 #include "uxac/uxac_v17.hpp"
 #include "uxac/uxac_v18.hpp"
+#include "uxac/uxac_v19.hpp"
 #include "uxac/uxac_v2.hpp"
+#include "uxac/uxac_v20.hpp"
 #include "uxac/uxac_v3.hpp"
 #include "uxac/uxac_v4.hpp"
 #include "uxac/uxac_v5.hpp"
@@ -133,6 +135,14 @@ using PrefPackUxAccount = std::variant<std::monostate
 #if ACCT_UXAC_MIN_VERSION <= 18
                                        ,
                                        v18::PrefPackUxAccount
+#endif
+#if ACCT_UXAC_MIN_VERSION <= 19
+                                       ,
+                                       v19::PrefPackUxAccount
+#endif
+#if ACCT_UXAC_MIN_VERSION <= 20
+                                       ,
+                                       v20::PrefPackUxAccount
 #endif
                                        >;
 
@@ -239,6 +249,16 @@ template <> struct Chunk<FourCC::acct, FourCC::uxac> {
     case 18:
       return de::Deserializer<Config>::template Parse<
           acct::uxac::v18::PrefPackUxAccount>(buf, b64);
+#endif
+#if ACCT_UXAC_MIN_VERSION <= 19
+    case 19:
+      return de::Deserializer<Config>::template Parse<
+          acct::uxac::v19::PrefPackUxAccount>(buf, b64);
+#endif
+#if ACCT_UXAC_MIN_VERSION <= 20
+    case 20:
+      return de::Deserializer<Config>::template Parse<
+          acct::uxac::v20::PrefPackUxAccount>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);

@@ -28,7 +28,7 @@ SOFTWARE.
 #include <variant>
 
 #ifndef MAPC_ENV_MIN_VERSION
-#define MAPC_ENV_MIN_VERSION 75
+#define MAPC_ENV_MIN_VERSION 76
 #endif
 
 #include "env/env_v29.hpp"
@@ -78,6 +78,7 @@ SOFTWARE.
 #include "env/env_v73.hpp"
 #include "env/env_v74.hpp"
 #include "env/env_v75.hpp"
+#include "env/env_v76.hpp"
 #include "pf/chunk.hpp"
 #include "pf/de/deserializer.hpp"
 #include "pf/magic.hpp"
@@ -273,6 +274,10 @@ using PackMapEnvironment = std::variant<std::monostate
 #if MAPC_ENV_MIN_VERSION <= 75
                                         ,
                                         v75::PackMapEnvironmentV75
+#endif
+#if MAPC_ENV_MIN_VERSION <= 76
+                                        ,
+                                        v76::PackMapEnvironmentV76
 #endif
                                         >;
 
@@ -519,6 +524,11 @@ template <> struct Chunk<FourCC::mapc, FourCC::env> {
     case 75:
       return de::Deserializer<Config>::template Parse<
           mapc::env::v75::PackMapEnvironmentV75>(buf, b64);
+#endif
+#if MAPC_ENV_MIN_VERSION <= 76
+    case 76:
+      return de::Deserializer<Config>::template Parse<
+          mapc::env::v76::PackMapEnvironmentV76>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);

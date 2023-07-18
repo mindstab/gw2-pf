@@ -28,13 +28,14 @@ SOFTWARE.
 #include <variant>
 
 #ifndef MAPC_WATR_MIN_VERSION
-#define MAPC_WATR_MIN_VERSION 0
+#define MAPC_WATR_MIN_VERSION 1
 #endif
 
 #include "pf/chunk.hpp"
 #include "pf/de/deserializer.hpp"
 #include "pf/magic.hpp"
 #include "watr/watr_v0.hpp"
+#include "watr/watr_v1.hpp"
 
 namespace pf {
 namespace mapc::watr {
@@ -43,6 +44,10 @@ using PackMapWater = std::variant<std::monostate
 #if MAPC_WATR_MIN_VERSION <= 0
                                   ,
                                   v0::PackMapWaterV0
+#endif
+#if MAPC_WATR_MIN_VERSION <= 1
+                                  ,
+                                  v1::PackMapWaterV1
 #endif
                                   >;
 
@@ -59,6 +64,11 @@ template <> struct Chunk<FourCC::mapc, FourCC::watr> {
     case 0:
       return de::Deserializer<Config>::template Parse<
           mapc::watr::v0::PackMapWaterV0>(buf, b64);
+#endif
+#if MAPC_WATR_MIN_VERSION <= 1
+    case 1:
+      return de::Deserializer<Config>::template Parse<
+          mapc::watr::v1::PackMapWaterV1>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);

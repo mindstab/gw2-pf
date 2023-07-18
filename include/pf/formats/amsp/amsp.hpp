@@ -28,7 +28,7 @@ SOFTWARE.
 #include <variant>
 
 #ifndef AMSP_AMSP_MIN_VERSION
-#define AMSP_AMSP_MIN_VERSION 29
+#define AMSP_AMSP_MIN_VERSION 30
 #endif
 
 #include "amsp/amsp_v0.hpp"
@@ -55,6 +55,7 @@ SOFTWARE.
 #include "amsp/amsp_v28.hpp"
 #include "amsp/amsp_v29.hpp"
 #include "amsp/amsp_v3.hpp"
+#include "amsp/amsp_v30.hpp"
 #include "amsp/amsp_v4.hpp"
 #include "amsp/amsp_v5.hpp"
 #include "amsp/amsp_v6.hpp"
@@ -188,6 +189,10 @@ using ScriptFileData = std::variant<std::monostate
 #if AMSP_AMSP_MIN_VERSION <= 29
                                     ,
                                     v29::ScriptFileDataV29
+#endif
+#if AMSP_AMSP_MIN_VERSION <= 30
+                                    ,
+                                    v30::ScriptFileDataV30
 #endif
                                     >;
 
@@ -349,6 +354,11 @@ template <> struct Chunk<FourCC::AMSP, FourCC::AMSP> {
     case 29:
       return de::Deserializer<Config>::template Parse<
           AMSP::AMSP::v29::ScriptFileDataV29>(buf, b64);
+#endif
+#if AMSP_AMSP_MIN_VERSION <= 30
+    case 30:
+      return de::Deserializer<Config>::template Parse<
+          AMSP::AMSP::v30::ScriptFileDataV30>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);

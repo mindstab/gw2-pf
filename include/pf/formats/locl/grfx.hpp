@@ -28,11 +28,12 @@ SOFTWARE.
 #include <variant>
 
 #ifndef LOCL_GRFX_MIN_VERSION
-#define LOCL_GRFX_MIN_VERSION 8
+#define LOCL_GRFX_MIN_VERSION 10
 #endif
 
 #include "grfx/grfx_v0.hpp"
 #include "grfx/grfx_v1.hpp"
+#include "grfx/grfx_v10.hpp"
 #include "grfx/grfx_v2.hpp"
 #include "grfx/grfx_v3.hpp"
 #include "grfx/grfx_v4.hpp"
@@ -40,6 +41,7 @@ SOFTWARE.
 #include "grfx/grfx_v6.hpp"
 #include "grfx/grfx_v7.hpp"
 #include "grfx/grfx_v8.hpp"
+#include "grfx/grfx_v9.hpp"
 #include "pf/chunk.hpp"
 #include "pf/de/deserializer.hpp"
 #include "pf/magic.hpp"
@@ -83,6 +85,14 @@ using PrefPackGraphics = std::variant<std::monostate
 #if LOCL_GRFX_MIN_VERSION <= 8
                                       ,
                                       v8::PrefPackGraphics
+#endif
+#if LOCL_GRFX_MIN_VERSION <= 9
+                                      ,
+                                      v9::PrefPackGraphics
+#endif
+#if LOCL_GRFX_MIN_VERSION <= 10
+                                      ,
+                                      v10::PrefPackGraphics
 #endif
                                       >;
 
@@ -139,6 +149,16 @@ template <> struct Chunk<FourCC::locl, FourCC::grfx> {
     case 8:
       return de::Deserializer<Config>::template Parse<
           locl::grfx::v8::PrefPackGraphics>(buf, b64);
+#endif
+#if LOCL_GRFX_MIN_VERSION <= 9
+    case 9:
+      return de::Deserializer<Config>::template Parse<
+          locl::grfx::v9::PrefPackGraphics>(buf, b64);
+#endif
+#if LOCL_GRFX_MIN_VERSION <= 10
+    case 10:
+      return de::Deserializer<Config>::template Parse<
+          locl::grfx::v10::PrefPackGraphics>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);

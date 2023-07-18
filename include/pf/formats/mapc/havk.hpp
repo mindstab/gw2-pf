@@ -28,7 +28,7 @@ SOFTWARE.
 #include <variant>
 
 #ifndef MAPC_HAVK_MIN_VERSION
-#define MAPC_HAVK_MIN_VERSION 14
+#define MAPC_HAVK_MIN_VERSION 16
 #endif
 
 #include "havk/havk_v10.hpp"
@@ -36,6 +36,8 @@ SOFTWARE.
 #include "havk/havk_v12.hpp"
 #include "havk/havk_v13.hpp"
 #include "havk/havk_v14.hpp"
+#include "havk/havk_v15.hpp"
+#include "havk/havk_v16.hpp"
 #include "havk/havk_v6.hpp"
 #include "havk/havk_v7.hpp"
 #include "havk/havk_v8.hpp"
@@ -83,6 +85,14 @@ using PackMapCollide = std::variant<std::monostate
 #if MAPC_HAVK_MIN_VERSION <= 14
                                     ,
                                     v14::PackMapCollideV14
+#endif
+#if MAPC_HAVK_MIN_VERSION <= 15
+                                    ,
+                                    v15::PackMapCollideV15
+#endif
+#if MAPC_HAVK_MIN_VERSION <= 16
+                                    ,
+                                    v16::PackMapCollideV16
 #endif
                                     >;
 
@@ -139,6 +149,16 @@ template <> struct Chunk<FourCC::mapc, FourCC::havk> {
     case 14:
       return de::Deserializer<Config>::template Parse<
           mapc::havk::v14::PackMapCollideV14>(buf, b64);
+#endif
+#if MAPC_HAVK_MIN_VERSION <= 15
+    case 15:
+      return de::Deserializer<Config>::template Parse<
+          mapc::havk::v15::PackMapCollideV15>(buf, b64);
+#endif
+#if MAPC_HAVK_MIN_VERSION <= 16
+    case 16:
+      return de::Deserializer<Config>::template Parse<
+          mapc::havk::v16::PackMapCollideV16>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);
