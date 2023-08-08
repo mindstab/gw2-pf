@@ -31,6 +31,7 @@ SOFTWARE.
 #include <span>
 #include <string>
 #include <vector>
+#include <cstring>
 
 #include "pf/de/error.hpp"
 #include "pf/types.hpp"

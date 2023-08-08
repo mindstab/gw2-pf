@@ -28,6 +28,7 @@ SOFTWARE.
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace pf {
 
