@@ -76,15 +76,12 @@ struct Reader {
 
       if (hdr->chunk_type == ChunkType) {
         std::advance(it, hdr->header_size);
-        constexpr auto kIs64BitFlag = (1 << 2);
-
-        auto b64 = (header_->flags & kIs64BitFlag) == kIs64BitFlag;
         return Type::template Parse<Config>(
             hdr->version,
             std::span(it, hdr->fixup_offset ? hdr->fixup_offset
                                             : (hdr->next_chunk_offset -
                                                offsetof(ChunkHeader, version))),
-            b64);
+            Has64BitPointers());
       }
 
       if (size < hdr->next_chunk_offset + offsetof(ChunkHeader, version)) {
@@ -95,6 +92,11 @@ struct Reader {
     } while (it != buf_.end());
 
     return std::unexpected{de::Error::kChunkNotFound};
+  }
+
+  [[nodiscard]] bool Has64BitPointers() const {
+    constexpr auto kIs64BitFlag = (1 << 2);
+    return (header_->flags & kIs64BitFlag) == kIs64BitFlag;
   }
 
  private:
