@@ -24,14 +24,15 @@ SOFTWARE.
 
 #pragma once
 
+#include <bit>
 #include <concepts>
+#include <cstring>
 #include <expected>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <vector>
-#include <cstring>
 
 #include "pf/de/error.hpp"
 #include "pf/types.hpp"
