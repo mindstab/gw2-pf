@@ -28,7 +28,7 @@ SOFTWARE.
 #include <variant>
 
 #ifndef MAPC_LGHT_MIN_VERSION
-#define MAPC_LGHT_MIN_VERSION 18
+#define MAPC_LGHT_MIN_VERSION 19
 #endif
 
 #include "lght/lght_v1.hpp"
@@ -41,6 +41,7 @@ SOFTWARE.
 #include "lght/lght_v16.hpp"
 #include "lght/lght_v17.hpp"
 #include "lght/lght_v18.hpp"
+#include "lght/lght_v19.hpp"
 #include "lght/lght_v2.hpp"
 #include "lght/lght_v3.hpp"
 #include "lght/lght_v4.hpp"
@@ -128,6 +129,10 @@ using PackMapLights = std::variant<std::monostate
 #if MAPC_LGHT_MIN_VERSION <= 18
                                    ,
                                    v18::PackMapLights
+#endif
+#if MAPC_LGHT_MIN_VERSION <= 19
+                                   ,
+                                   v19::PackMapLights
 #endif
                                    >;
 
@@ -229,6 +234,11 @@ template <> struct Chunk<FourCC::mapc, FourCC::lght> {
     case 18:
       return de::Deserializer<Config>::template Parse<
           mapc::lght::v18::PackMapLights>(buf, b64);
+#endif
+#if MAPC_LGHT_MIN_VERSION <= 19
+    case 19:
+      return de::Deserializer<Config>::template Parse<
+          mapc::lght::v19::PackMapLights>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);

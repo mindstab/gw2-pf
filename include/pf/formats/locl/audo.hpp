@@ -28,7 +28,7 @@ SOFTWARE.
 #include <variant>
 
 #ifndef LOCL_AUDO_MIN_VERSION
-#define LOCL_AUDO_MIN_VERSION 5
+#define LOCL_AUDO_MIN_VERSION 6
 #endif
 
 #include "audo/audo_v0.hpp"
@@ -37,6 +37,7 @@ SOFTWARE.
 #include "audo/audo_v3.hpp"
 #include "audo/audo_v4.hpp"
 #include "audo/audo_v5.hpp"
+#include "audo/audo_v6.hpp"
 #include "pf/chunk.hpp"
 #include "pf/de/deserializer.hpp"
 #include "pf/magic.hpp"
@@ -68,6 +69,10 @@ using PrefPackAudio = std::variant<std::monostate
 #if LOCL_AUDO_MIN_VERSION <= 5
                                    ,
                                    v5::PrefPackAudio
+#endif
+#if LOCL_AUDO_MIN_VERSION <= 6
+                                   ,
+                                   v6::PrefPackAudio
 #endif
                                    >;
 
@@ -109,6 +114,11 @@ template <> struct Chunk<FourCC::locl, FourCC::audo> {
     case 5:
       return de::Deserializer<Config>::template Parse<
           locl::audo::v5::PrefPackAudio>(buf, b64);
+#endif
+#if LOCL_AUDO_MIN_VERSION <= 6
+    case 6:
+      return de::Deserializer<Config>::template Parse<
+          locl::audo::v6::PrefPackAudio>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);

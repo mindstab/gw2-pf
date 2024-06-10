@@ -28,7 +28,7 @@ SOFTWARE.
 #include <variant>
 
 #ifndef ACCT_CHAT_MIN_VERSION
-#define ACCT_CHAT_MIN_VERSION 5
+#define ACCT_CHAT_MIN_VERSION 6
 #endif
 
 #include "chat/chat_v0.hpp"
@@ -37,6 +37,7 @@ SOFTWARE.
 #include "chat/chat_v3.hpp"
 #include "chat/chat_v4.hpp"
 #include "chat/chat_v5.hpp"
+#include "chat/chat_v6.hpp"
 #include "pf/chunk.hpp"
 #include "pf/de/deserializer.hpp"
 #include "pf/magic.hpp"
@@ -68,6 +69,10 @@ using PrefPackChat = std::variant<std::monostate
 #if ACCT_CHAT_MIN_VERSION <= 5
                                   ,
                                   v5::PrefPackChat
+#endif
+#if ACCT_CHAT_MIN_VERSION <= 6
+                                  ,
+                                  v6::PrefPackChat
 #endif
                                   >;
 
@@ -109,6 +114,11 @@ template <> struct Chunk<FourCC::acct, FourCC::chat> {
     case 5:
       return de::Deserializer<Config>::template Parse<
           acct::chat::v5::PrefPackChat>(buf, b64);
+#endif
+#if ACCT_CHAT_MIN_VERSION <= 6
+    case 6:
+      return de::Deserializer<Config>::template Parse<
+          acct::chat::v6::PrefPackChat>(buf, b64);
 #endif
     default:
       return std::unexpected(de::Error::kUnsupportedVersion);
